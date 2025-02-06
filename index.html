@@ -4,29 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AR Ground Model</title>
+    <!-- A-Frame for AR.js -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js/aframe/build/aframe-ar.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: none; }
+    </style>
 </head>
-<body style="margin: 0; overflow: hidden;">
+<body>
 
     <!-- A-Frame scene setup for AR -->
-    <a-scene embedded arjs>
-        <!-- This component sets up AR with ground detection -->
-        <a-entity id="camera" camera></a-entity>
+    <a-scene embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false">
+        <!-- Camera setup -->
+        <a-entity camera></a-entity>
 
-        <!-- Ground plane detection: AR model will appear on the detected ground -->
-        <a-entity id="ground" 
-                  position="0 0 0" 
-                  geometry="primitive: plane; width: 10; height: 10" 
-                  material="color: #7BC8A4; opacity: 0.5">
-        </a-entity>
+        <!-- Ground detection setup -->
+        <a-plane position="0 0 0" rotation="-90 0 0" width="10" height="10" color="gray" opacity="0.5"></a-plane>
 
-        <!-- AR model using GLTF format -->
+        <!-- Load and position your 3D model -->
         <a-entity id="model" 
                   gltf-model="https://6ad30e26.ar-qrcode.pages.dev/assets/doric_pillar.glb"
                   scale="0.5 0.5 0.5" 
                   position="0 0 0" 
-                  rotation="0 180 0">
+                  rotation="0 0 0">
         </a-entity>
 
     </a-scene>
