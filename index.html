@@ -3,96 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebXR AR Demo</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #eeeeee;
-        }
-        canvas {
-            display: block;
-        }
-    </style>
+    <title>AR Model</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js/aframe/build/aframe-ar.js"></script>
 </head>
-<body>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.125.0/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@webxr-samples/three-ar.js"></script>
+<body style="margin: 0; overflow: hidden;">
 
-    <script>
-        // Initialize 3D scene and camera
-        let scene, camera, renderer;
-        let model;
-        let controller;
+    <!-- A-Frame scene setup for AR -->
+    <a-scene embedded arjs>
+        <!-- Marker for AR model placement -->
+        <a-marker preset="hiro">
+            <!-- 3D model using GLTF format -->
+            <a-entity gltf-model="url(https://6ad30e26.ar-qrcode.pages.dev/assets/doric_pillar.glb)"
+                      scale="0.5 0.5 0.5"
+                      position="0 0 0">
+            </a-entity>
+        </a-marker>
 
-        // Create the AR button and add event listeners
-        function init() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.body.appendChild(renderer.domElement);
+        <!-- Camera setup for AR scene -->
+        <a-camera></a-camera>
+    </a-scene>
 
-            // Create the AR button (WebXR API)
-            const arButton = new XRButton({
-                sessionInit: { optionalFeatures: ['local', 'hand-tracking'] }
-            });
-            document.body.appendChild(arButton);
-
-            // Load the 3D model (from your URL)
-            const loader = new THREE.GLTFLoader();
-            loader.load("https://6ad30e26.ar-qrcode.pages.dev/assets/doric_pillar.glb", function(gltf) {
-                model = gltf.scene;
-                model.scale.set(0.2, 0.2, 0.2);  // Scale the model appropriately
-                model.position.set(0, 0, -2);   // Set the initial position of the model
-                scene.add(model);
-            });
-
-            // Create a basic AR controller
-            controller = new THREE.Group();
-            scene.add(controller);
-
-            // Animation loop
-            function animate() {
-                renderer.setAnimationLoop(animate);
-                if (model) {
-                    model.rotation.y += 0.01;  // Rotate the model smoothly
-                }
-                renderer.render(scene, camera);
-            }
-
-            animate();
-        }
-
-        // Check for WebXR support and initialize session
-        if (navigator.xr) {
-            navigator.xr.requestSession('immersive-ar', {
-                requiredFeatures: ['local', 'hit-test']
-            }).then(function(session) {
-                session.addEventListener('end', function() {
-                    document.body.removeChild(renderer.domElement);
-                });
-                init();
-                session.requestReferenceSpace('local').then(function(referenceSpace) {
-                    // Listen for frame updates and apply them
-                    session.requestAnimationFrame(render);
-                });
-            }).catch(function(error) {
-                console.error('Failed to initialize WebXR session: ', error);
-            });
-        } else {
-            alert('WebXR is not supported on this device/browser');
-        }
-
-        function render(time, frame) {
-            const session = frame.session;
-            const referenceSpace = frame.referenceSpace;
-            // Update the camera and controller position here as per AR session
-            // More WebXR-specific setup here for mobile AR
-
-            session.requestAnimationFrame(render);
-        }
-    </script>
 </body>
 </html>
