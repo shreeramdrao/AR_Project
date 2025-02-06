@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Model</title>
+    <title>AR Ground Model</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js/aframe/build/aframe-ar.js"></script>
 </head>
@@ -11,17 +11,24 @@
 
     <!-- A-Frame scene setup for AR -->
     <a-scene embedded arjs>
-        <!-- Marker for AR model placement -->
-        <a-marker preset="hiro">
-            <!-- 3D model using GLTF format -->
-            <a-entity gltf-model="url(https://6ad30e26.ar-qrcode.pages.dev/assets/doric_pillar.glb)"
-                      scale="0.5 0.5 0.5"
-                      position="0 0 0">
-            </a-entity>
-        </a-marker>
+        <!-- This component sets up AR with ground detection -->
+        <a-entity id="camera" camera></a-entity>
 
-        <!-- Camera setup for AR scene -->
-        <a-camera></a-camera>
+        <!-- Ground plane detection: AR model will appear on the detected ground -->
+        <a-entity id="ground" 
+                  position="0 0 0" 
+                  geometry="primitive: plane; width: 10; height: 10" 
+                  material="color: #7BC8A4; opacity: 0.5">
+        </a-entity>
+
+        <!-- AR model using GLTF format -->
+        <a-entity id="model" 
+                  gltf-model="url(https://6ad30e26.ar-qrcode.pages.dev/assets/doric_pillar.glb)"
+                  scale="0.5 0.5 0.5" 
+                  position="0 0 0" 
+                  rotation="0 180 0">
+        </a-entity>
+
     </a-scene>
 
 </body>
