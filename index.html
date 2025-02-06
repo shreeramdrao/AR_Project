@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebXR AR Demo</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #eeeeee;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- AR scene setup -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.125.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@webxr-samples/three-ar.js"></script>
+
+    <script>
+        // Initialize 3D scene and camera
+        let scene, camera, renderer;
+        let model;
+        let controller;
+
+        // Create the AR button and add event listeners
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            // Create the AR button (WebXR API)
+            const arButton = new XRButton({
+                sessionInit: { optionalFeatures: ['local', 'hand-tracking'] }
+            });
+            document.body.appendChild(arButton);
+
+            // Load the 3D model (from your URL)
+            const loader = new THREE.GLTFLoader();
+            loader.load("https://6ad30e26.ar-qrcode.pages.dev/assets/doric_pillar.glb", function(gltf) {
+                model = gltf.scene;
+                model.scale.set(0.2, 0.2, 0.2);  // Scale the model appropriately
+                model.position.set(0, 0, -2);   // Set the initial position of the model
+                scene.add(model);
+            });
+
+            // Create a basic AR controller
+            controller = new THREE.Group();
+            scene.add(controller);
+
+            // Animation loop
+            function animate() {
+                renderer.setAnimationLoop(animate);
+                if (model) {
+                    model.rotation.y += 0.01;  // Rotate the model smoothly
+                }
+                renderer.render(scene, camera);
+            }
+
+            animate();
+        }
+
+        // Set up WebXR session
+        if (navigator.xr) {
+            navigator.xr.requestDevice().then(function(device) {
+                device.requestSession({ immersive: true }).then(function(session) {
+                    session.addEventListener('end', function() {
+                        document.body.removeChild(renderer.domElement);
+                    });
+                    init();
+                    session.requestReferenceSpace('local').then(function(referenceSpace) {
+                        // Listen for frame updates and apply them
+                        session.requestAnimationFrame(render);
+                    });
+                });
+            });
+        }
+
+        function render(time, frame) {
+            const session = frame.session;
+            const referenceSpace = frame.referenceSpace;
+            // Update the camera and controller position here as per AR session
+            // More WebXR-specific setup here for mobile AR
+
+            session.requestAnimationFrame(render);
+        }
+    </script>
+</body>
+</html>
